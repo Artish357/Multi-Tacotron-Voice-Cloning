@@ -58,7 +58,7 @@ if __name__ == '__main__':
                         help="Text file")                           
     args = parser.parse_args()
     if args.text_file:
-        with open(file_path) as f:
+        with open(args.file_path) as f:
             file_text = f.read()
             args.text.extend(tokenize(file_text))
     print_args(args, parser)
