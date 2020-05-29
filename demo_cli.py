@@ -153,7 +153,7 @@ if __name__ == '__main__':
     texts = args.text
     texts = g2p(texts)
     print(texts)
-    embeds = [embed]
+    embeds = [embed] * len(texts)
     # If you know what the attention layer alignments are, you can retrieve them here by
     # passing return_alignments=True
     specs = synthesizer.synthesize_spectrograms(texts, embeds)
