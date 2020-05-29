@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from encoder.params_model import model_embedding_size as speaker_embedding_size
 from utils.argutils import print_args
 from synthesizer.inference import Synthesizer
