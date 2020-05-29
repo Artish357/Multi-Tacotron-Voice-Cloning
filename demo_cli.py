@@ -11,6 +11,21 @@ import torch
 import sys
 from g2p.train import g2p
 
+def split_sentence(sentence):
+  if (len(sentence) > 12):
+    pivot = len(sentence)//2
+    result = split_sentence(sentence[:pivot])
+    result.extend(split_sentence(sentence[pivot:]))
+    return result
+  return [sentence]
+
+def tokenize(text):
+  sentences = [[y for y in x.strip().split(' ') if len(y) > 0] for x in text.split('.')]
+  result = []
+  for s in sentences:
+    result.extend(split_sentence(s))
+  return [' '.join(x) for x in result if len(x)>0]
+
 if __name__ == '__main__':
     ## Info & args
     parser = argparse.ArgumentParser(
@@ -39,7 +54,13 @@ if __name__ == '__main__':
     parser.add_argument("-n", "--no_test",
                         action="store_true",
                         help="Do not perform initial setup test")                           
+    parser.add_argument("-f", "--text_file", type=Path, 
+                        help="Text file")                           
     args = parser.parse_args()
+    if args.text_file:
+        with open(file_path) as f:
+            file_text = f.read()
+            args.text.extend(tokenize(file_text))
     print_args(args, parser)
     if not args.no_sound:
         import sounddevice as sd
@@ -170,7 +191,7 @@ if __name__ == '__main__':
         ## Post-generation
         # There's a bug with sounddevice that makes the audio cut one second earlier, so we
         # pad it.
-        generated_wav = np.pad(generated_wav, (0, synthesizer.sample_rate), mode="constant")
+        generated_wav = np.pad(generated_wav, (0, synthesizer.sample_rate * 2), mode="constant")
         
         # Play the audio (non-blocking)
         if not args.no_sound:
