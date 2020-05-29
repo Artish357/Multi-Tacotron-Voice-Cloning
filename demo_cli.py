@@ -30,36 +30,38 @@ if __name__ == '__main__':
         "overhead but allows to save some GPU memory for lower-end GPUs.")
     parser.add_argument("--no_sound", action="store_true", help=\
         "If True, audio won't be played.")
-    parser.add_argument("-t", "--text", 
+    parser.add_argument("-t", "--text", action='append',
                         default="Hello my friends. Я многоязычный синтез построенный на tacotron. Шла саша по шоссе и сосала сушку",
                         help="Text") 
     parser.add_argument("-p", "--path_wav", type=Path, 
                         default="ex.wav",
                         help="wav file")                           
+    parser.add_argument("-n", "--no_test",
+                        action="store_true",
+                        help="Do not perform initial setup test")                           
     args = parser.parse_args()
     print_args(args, parser)
     if not args.no_sound:
         import sounddevice as sd
-        
-    
-    ## Print some environment information (for debugging purposes)
-    print("Running a test of your configuration...\n")
-    if not torch.cuda.is_available():
-        print("Your PyTorch installation is not configured to use CUDA. If you have a GPU ready "
-              "for deep learning, ensure that the drivers are properly installed, and that your "
-              "CUDA version matches your PyTorch installation. CPU-only inference is currently "
-              "not supported.", file=sys.stderr)
-        quit(-1)
-    device_id = torch.cuda.current_device()
-    gpu_properties = torch.cuda.get_device_properties(device_id)
-    print("Found %d GPUs available. Using GPU %d (%s) of compute capability %d.%d with "
-          "%.1fGb total memory.\n" % 
-          (torch.cuda.device_count(),
-           device_id,
-           gpu_properties.name,
-           gpu_properties.major,
-           gpu_properties.minor,
-           gpu_properties.total_memory / 1e9))
+    if not args.no_test:
+        ## Print some environment information (for debugging purposes)
+        print("Running a test of your configuration...\n")
+        if not torch.cuda.is_available():
+            print("Your PyTorch installation is not configured to use CUDA. If you have a GPU ready "
+                "for deep learning, ensure that the drivers are properly installed, and that your "
+                "CUDA version matches your PyTorch installation. CPU-only inference is currently "
+                "not supported.", file=sys.stderr)
+            quit(-1)
+        device_id = torch.cuda.current_device()
+        gpu_properties = torch.cuda.get_device_properties(device_id)
+        print("Found %d GPUs available. Using GPU %d (%s) of compute capability %d.%d with "
+            "%.1fGb total memory.\n" % 
+            (torch.cuda.device_count(),
+            device_id,
+            gpu_properties.name,
+            gpu_properties.major,
+            gpu_properties.minor,
+            gpu_properties.total_memory / 1e9))
     
     
     ## Load the models one by one.
@@ -147,10 +149,8 @@ if __name__ == '__main__':
     
     
     ## Generating the spectrogram
-    # text = input("Write a sentence (+-20 words) to be synthesized:(Введите предложение для синтеза)\n")
-    
     # The synthesizer works in batch, so you need to put your data in a list or numpy array
-    texts = [args.text]
+    texts = args.text
     texts = g2p(texts)
     print(texts)
     embeds = [embed]
