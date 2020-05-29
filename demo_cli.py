@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument("--no_sound", action="store_true", help=\
         "If True, audio won't be played.")
     parser.add_argument("-t", "--text", action='append',
-                        default="Hello my friends. Я многоязычный синтез построенный на tacotron. Шла саша по шоссе и сосала сушку",
+                        default=[],
                         help="Text") 
     parser.add_argument("-p", "--path_wav", type=Path, 
                         default="ex.wav",
