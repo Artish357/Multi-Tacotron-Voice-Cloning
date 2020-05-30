@@ -175,7 +175,7 @@ if __name__ == '__main__':
     # The synthesizer works in batch, so you need to put your data in a list or numpy array
     texts = args.text
     for i in range(0, len(args.text), 50):
-        batch = args.text[50*i:50*(i+1)]
+        batch = args.text[i:i+50)]
         if (len(batch) == 0):
             continue
         texts = g2p(batch)
