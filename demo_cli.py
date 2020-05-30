@@ -181,8 +181,6 @@ if __name__ == '__main__':
     # passing return_alignments=True
     specs = synthesizer.synthesize_spectrograms(texts, embeds)
     for spec in specs:
-        print("Created the mel spectrogram")
-        
         ## Generating the waveform
         print("Synthesizing the waveform:")
         # Synthesizing the waveform is fairly straightforward. Remember that the longer the
@@ -201,8 +199,7 @@ if __name__ == '__main__':
             sd.play(generated_wav, synthesizer.sample_rate)
             
         # Save it on the disk
-        fpath = "demo_output_%03d.wav" % num_generated
-        print(generated_wav.dtype)
+        fpath = "demo_output_%03d.wav out of %d" % (num_generated, len(texts))
         librosa.output.write_wav(fpath, generated_wav.astype(np.float32), 
                                 synthesizer.sample_rate)
         num_generated += 1
