@@ -174,35 +174,36 @@ if __name__ == '__main__':
     ## Generating the spectrogram
     # The synthesizer works in batch, so you need to put your data in a list or numpy array
     texts = args.text
-    texts = g2p(texts)
-    print(texts)
-    embeds = [embed] * len(texts)
-    # If you know what the attention layer alignments are, you can retrieve them here by
-    # passing return_alignments=True
-    specs = synthesizer.synthesize_spectrograms(texts, embeds)
-    for spec in specs:
-        ## Generating the waveform
-        print("Synthesizing the waveform:")
-        # Synthesizing the waveform is fairly straightforward. Remember that the longer the
-        # spectrogram, the more time-efficient the vocoder.
-        generated_wav = vocoder.infer_waveform(spec)
-        
-        
-        ## Post-generation
-        # There's a bug with sounddevice that makes the audio cut one second earlier, so we
-        # pad it.
-        generated_wav = np.pad(generated_wav, (0, synthesizer.sample_rate * 2), mode="constant")
-        
-        # Play the audio (non-blocking)
-        if not args.no_sound:
-            sd.stop()
-            sd.play(generated_wav, synthesizer.sample_rate)
+    for i in range(0, len(args.text), 50):
+        texts = g2p(args.text)
+        print(texts)
+        embeds = [embed] * len(texts)
+        # If you know what the attention layer alignments are, you can retrieve them here by
+        # passing return_alignments=True
+        specs = synthesizer.synthesize_spectrograms(texts, embeds)
+        for spec in specs:
+            ## Generating the waveform
+            print("Synthesizing the waveform:")
+            # Synthesizing the waveform is fairly straightforward. Remember that the longer the
+            # spectrogram, the more time-efficient the vocoder.
+            generated_wav = vocoder.infer_waveform(spec)
             
-        # Save it on the disk
-        fpath = "demo_output_%03d.wav out of %d" % (num_generated, len(texts))
-        librosa.output.write_wav(fpath, generated_wav.astype(np.float32), 
-                                synthesizer.sample_rate)
-        num_generated += 1
-        print("\nSaved output as %s\n\n" % fpath)
-    
+            
+            ## Post-generation
+            # There's a bug with sounddevice that makes the audio cut one second earlier, so we
+            # pad it.
+            generated_wav = np.pad(generated_wav, (0, synthesizer.sample_rate * 2), mode="constant")
+            
+            # Play the audio (non-blocking)
+            if not args.no_sound:
+                sd.stop()
+                sd.play(generated_wav, synthesizer.sample_rate)
+                
+            # Save it on the disk
+            fpath = "demo_output_%03d.wav out of %d" % (num_generated, len(args.text))
+            librosa.output.write_wav(fpath, generated_wav.astype(np.float32), 
+                                    synthesizer.sample_rate)
+            num_generated += 1
+            print("\nSaved output as %s\n\n" % fpath)
+        
     
