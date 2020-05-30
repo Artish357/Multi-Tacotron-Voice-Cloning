@@ -175,7 +175,10 @@ if __name__ == '__main__':
     # The synthesizer works in batch, so you need to put your data in a list or numpy array
     texts = args.text
     for i in range(0, len(args.text), 50):
-        texts = g2p(args.text[50*i:50*(i+1)])
+        batch = args.text[50*i:50*(i+1)]
+        if (len(batch) == 0):
+            continue
+        texts = g2p(batch)
         print(texts)
         embeds = [embed] * len(texts)
         # If you know what the attention layer alignments are, you can retrieve them here by
