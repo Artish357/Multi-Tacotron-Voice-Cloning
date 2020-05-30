@@ -200,7 +200,8 @@ if __name__ == '__main__':
                 sd.play(generated_wav, synthesizer.sample_rate)
                 
             # Save it on the disk
-            fpath = "demo_output_%03d.wav out of %d" % (num_generated, len(args.text))
+            print("%d/%d" % (num_generated, len(args.text)))
+            fpath = "demo_output_%03d.wav" % (num_generated)
             librosa.output.write_wav(fpath, generated_wav.astype(np.float32), 
                                     synthesizer.sample_rate)
             num_generated += 1
